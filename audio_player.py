@@ -5,6 +5,19 @@ from pygame import mixer
 from order import StraightOrder
 
 
+def update_order(function_to_decorate):
+    def wrapper(self, *args, **kwargs):
+        function_to_decorate(self, *args, **kwargs)
+
+        order_type = type(self.__order)
+        self.__order = order_type(
+            len(self.__playlist),
+            self.__order.current_id()
+        )
+
+    return wrapper
+
+
 class AudioPlayer:
 
     def __init__(self):
