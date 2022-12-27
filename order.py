@@ -12,7 +12,7 @@ class Order(ABC):
         pass
 
     @abstractmethod
-    def move_back(self):
+    def move_backward(self):
         pass
 
     @abstractmethod
@@ -32,7 +32,7 @@ class StraightOrder(Order):
     def move_forward(self):
         self._current_id = (self._current_id + 1) % self._length
 
-    def move_back(self):
+    def move_backward(self):
         self._current_id = (self._current_id - 1) % self._length
 
     def current_id(self):
@@ -44,9 +44,9 @@ class StraightOrder(Order):
 
 class ReverseOrder(StraightOrder):
     def move_forward(self):
-        super().move_back()
+        super().move_backward()
 
-    def move_back(self):
+    def move_backward(self):
         super().move_forward()
 
 
@@ -63,7 +63,7 @@ class RandomOrder(Order):
         self.__current_index = (self.__current_index + 1) % self._length
         self._current_id = self.__random_order[self.__current_index]
 
-    def move_back(self):
+    def move_backward(self):
         self.__current_index = (self.__current_index - 1) % self._length
         self._current_id = self.__random_order[self.__current_index]
 
