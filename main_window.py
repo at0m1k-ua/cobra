@@ -1,7 +1,6 @@
 from pathlib import Path
 
-from PyQt6.QtWidgets import QFileDialog
-from PyQt6.uic.uiparser import QtWidgets
+from PyQt6 import QtWidgets
 
 from audio_player import AudioPlayer
 from main_window_ui import MainWindowUI
@@ -14,32 +13,32 @@ class MainWindow(QtWidgets.QMainWindow):
         self.__audio_player = AudioPlayer()
 
     def __add(self):
-        file_dialog = QFileDialog()
+        file_dialog = QtWidgets.QFileDialog()
         paths_str = file_dialog.getOpenFileNames(self,
                                                  "Open some files",
                                                  str(Path.home()),
                                                  "MP3 files (*.mp3)")[0]
         for path_str in paths_str:
             path = Path(path_str)
-            self.__ui_list.addItem(path_str.split("/")[-1])
-            self.__audioplayer.add(path)
+            self.__ui.list_tracks.addItem(path.name)
+            self.__audio_player.add(path)
 
     def __remove(self):
         for index in self.__ui.list_tracks.selectedIndexes():
-            self.__audioplayer.remove(index.row())
+            self.__audio_player.remove(index.row())
 
     def __straight(self):
-        self.__audioplayer.straight_order()
-        self.__set_order_ui(StraightOrder)
+        self.__set_order(StraightOrder)
 
     def __reverse(self):
-        pass
+        self.__set_order(ReverseOrder)
 
     def __random(self):
-        pass
+        self.__set_order(RandomOrder)
 
-    def __set_order_ui(self, required_order: type):
-        pass
+    def __set_order(self, order_type: type):
+        self.__audio_player.set_order_type(order_type)
+        # TODO set order for UI
 
     def __play(self):
         pass

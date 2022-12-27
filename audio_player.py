@@ -40,6 +40,12 @@ class AudioPlayer:
     def next(self):
         pass
 
+    def set_order_type(self, new_order_type: type):
+        self.__order = new_order_type(
+            len(self.playlist),
+            self.__order.current_id()
+        )
+
     @update_order
     def add(self, path: Path):
         if path in self.playlist:
