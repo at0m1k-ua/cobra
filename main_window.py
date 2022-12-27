@@ -9,7 +9,9 @@ from order import RandomOrder, StraightOrder, ReverseOrder
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
+        super().__init__()
         self.__ui = MainWindowUI()
+        self.__ui.setupUi(self)
         self.__audio_player = AudioPlayer()
 
     def __add(self):
