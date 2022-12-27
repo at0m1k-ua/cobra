@@ -2,12 +2,15 @@ from pathlib import Path
 
 from pygame import mixer
 
+from order import StraightOrder
+
 
 class AudioPlayer:
 
     def __init__(self):
         mixer.init()
         self.playlist: list = list()
+        self.__order = StraightOrder(0, 0)
 
     def play(self):
         pass
@@ -25,14 +28,18 @@ class AudioPlayer:
         pass
 
     def add(self, path: Path):
-        if path in self.__playlist:
+        if path in self.playlist:
             return
-        self.__playlist.append(path)
+        self.playlist.append(path)
         self.__update_order()
 
     def remove(self, index: int):
-        del self.__playlist[index]
+        del self.playlist[index]
         self.__update_order()
 
     def __update_order(self):
-        pass
+        order_type = type(self.__order)
+        self.__order = order_type(
+            len(self.playlist),
+            self.__order.current_id()
+        )
