@@ -8,13 +8,3 @@ class MainWindowUI(Ui_mainWindow):
         super().setupUi(main_window)
         main_window.setFixedHeight(352)
         main_window.setFixedWidth(202)
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    mainWindow = QtWidgets.QMainWindow()
-    ui = MainWindowUI()
-    ui.setupUi(mainWindow)
-    mainWindow.show()
-    sys.exit(app.exec())
