@@ -40,19 +40,12 @@ class AudioPlayer:
     def next(self):
         pass
 
+    @update_order
     def add(self, path: Path):
         if path in self.playlist:
             return
         self.playlist.append(path)
-        self.__update_order()
 
+    @update_order
     def remove(self, index: int):
         del self.playlist[index]
-        self.__update_order()
-
-    def __update_order(self):
-        order_type = type(self.__order)
-        self.__order = order_type(
-            len(self.playlist),
-            self.__order.current_id()
-        )
