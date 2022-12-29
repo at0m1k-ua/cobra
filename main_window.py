@@ -13,6 +13,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.__ui = MainWindowUI()
         self.__ui.setupUi(self)
         self.__audio_player = AudioPlayer()
+        self.__set_order(StraightOrder)
         self.__set_up_events()
 
     def __add(self):
@@ -43,7 +44,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def __set_order(self, order_type: type):
         self.__audio_player.set_order_type(order_type)
-        # TODO set order for UI
+        self.__ui.straight_button.setEnabled(order_type != StraightOrder)
+        self.__ui.reverse_button.setEnabled(order_type != ReverseOrder)
+        self.__ui.random_button.setEnabled(order_type != RandomOrder)
 
     def __play(self):
         pass
@@ -57,7 +60,10 @@ class MainWindow(QtWidgets.QMainWindow):
     def __set_up_events(self):
         events = {
             self.__ui.add_button.pressed: self.__add,
-            self.__ui.remove_button.pressed: self.__remove
+            self.__ui.remove_button.pressed: self.__remove,
+            self.__ui.straight_button.pressed: lambda: self.__set_order(StraightOrder),
+            self.__ui.reverse_button.pressed: lambda: self.__set_order(ReverseOrder),
+            self.__ui.random_button.pressed: lambda: self.__set_order(RandomOrder)
         }
 
         for event in events:
