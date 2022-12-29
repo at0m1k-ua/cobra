@@ -44,9 +44,15 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def __set_order(self, order_type: type):
         self.__audio_player.set_order_type(order_type)
-        self.__ui.straight_button.setEnabled(order_type != StraightOrder)
-        self.__ui.reverse_button.setEnabled(order_type != ReverseOrder)
-        self.__ui.random_button.setEnabled(order_type != RandomOrder)
+
+        order_types = {
+            self.__ui.straight_button: StraightOrder,
+            self.__ui.reverse_button: ReverseOrder,
+            self.__ui.random_button: RandomOrder,
+        }
+
+        for button in order_types:
+            button.setEnabled(order_type != order_types[button])
 
     def __play(self):
         pass
