@@ -13,7 +13,7 @@ class AudioPlayer:
         self.__order = StraightOrder(0, 0)
 
     @staticmethod
-    def update_order(function_to_decorate):
+    def __update_order(function_to_decorate):
         def wrapper(self, *args, **kwargs):
             function_to_decorate(self, *args, **kwargs)
 
@@ -46,12 +46,12 @@ class AudioPlayer:
             self.__order.current_id()
         )
 
-    @update_order
+    @__update_order
     def add(self, path: Path):
         if path in self.playlist:
             return
         self.playlist.append(path)
 
-    @update_order
+    @__update_order
     def remove(self, index: int):
         del self.playlist[index]

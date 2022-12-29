@@ -55,7 +55,19 @@ class MainWindow(QtWidgets.QMainWindow):
             button.setEnabled(order_type != order_types[button])
 
     def __play(self):
-        pass
+        self.__ui.play_button.setEnabled(False)
+        self.__ui.pause_button.setEnabled(True)
+        self.__ui.stop_button.setEnabled(True)
+
+    def __pause(self):
+        self.__ui.play_button.setEnabled(True)
+        self.__ui.pause_button.setEnabled(False)
+        self.__ui.stop_button.setEnabled(True)
+
+    def __stop(self):
+        self.__ui.play_button.setEnabled(True)
+        self.__ui.pause_button.setEnabled(False)
+        self.__ui.stop_button.setEnabled(False)
 
     def __timeline_pressed(self):
         pass
@@ -69,7 +81,10 @@ class MainWindow(QtWidgets.QMainWindow):
             self.__ui.remove_button.pressed: self.__remove,
             self.__ui.straight_button.pressed: lambda: self.__set_order(StraightOrder),
             self.__ui.reverse_button.pressed: lambda: self.__set_order(ReverseOrder),
-            self.__ui.random_button.pressed: lambda: self.__set_order(RandomOrder)
+            self.__ui.random_button.pressed: lambda: self.__set_order(RandomOrder),
+            self.__ui.play_button.pressed: self.__play,
+            self.__ui.pause_button.pressed: self.__pause,
+            self.__ui.stop_button.pressed: self.__stop
         }
 
         for event in events:
