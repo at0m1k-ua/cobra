@@ -28,7 +28,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.__audio_player.add(path)
 
     def __remove(self):
-        for index in self.__ui.list_tracks.selectedIndexes():
+        for index in self.__ui.list_tracks.selectedIndexes()[::-1]:
             row: int = index.row()
             self.__ui.list_tracks.takeItem(row)
             if self.__audio_player.remove(row):
