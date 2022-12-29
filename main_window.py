@@ -13,6 +13,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.__ui = MainWindowUI()
         self.__ui.setupUi(self)
         self.__audio_player = AudioPlayer()
+        self.__set_up_events()
 
     def __add(self):
         file_dialog = QtWidgets.QFileDialog()
@@ -27,7 +28,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def __remove(self):
         for index in self.__ui.list_tracks.selectedIndexes():
-            self.__audio_player.remove(index.row())
+            row: int = index.row()
+            self.__audio_player.remove(row)
+            self.__ui.list_tracks.takeItem(row)
 
     def __straight(self):
         self.__set_order(StraightOrder)
@@ -52,4 +55,10 @@ class MainWindow(QtWidgets.QMainWindow):
         pass
 
     def __set_up_events(self):
-        pass
+        events = {
+            self.__ui.add_button.pressed: self.__add,
+            self.__ui.remove_button.pressed: self.__remove
+        }
+
+        for event in events:
+            event.connect(events[event])
