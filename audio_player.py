@@ -11,29 +11,56 @@ class AudioPlayer:
         mixer.init()
         self.playlist: list = list()
         self.__order = StraightOrder(0, 0)
+        self.__current_track = None
+        self.__is_paused = False
 
     @staticmethod
-    def __update_order(function_to_decorate):
+    def __update_order(method_to_decorate):
         def wrapper(self, *args, **kwargs):
-            function_to_decorate(self, *args, **kwargs)
+            result = method_to_decorate(self, *args, **kwargs)
 
             order_type = type(self.__order)
             self.__order = order_type(
                 len(self.playlist),
                 self.__order.current_id()
             )
+            return result
 
         return wrapper
 
+    @staticmethod
+    def __forbid_empty_playlist(method_to_decorate):
+        def wrapper(self, *args, **kwargs):
+            if not len(self.playlist):
+                return False  # don't change UI
+            result = method_to_decorate(self, *args, **kwargs)
+            return result or True
+
+        return wrapper
+
+    @__forbid_empty_playlist
     def play(self):
-        pass
+        if not self.__is_paused:
+            self.__current_track = self.playlist[self.__order.current_id()]
+            mixer.music.load(self.__current_track)
+            mixer.music.play()
+        else:
+            mixer.music.unpause()
+            self.__is_paused = False
 
+    @__forbid_empty_playlist
     def stop(self):
-        pass
+        self.__is_paused = False
+        mixer.music.stop()
+        mixer.music.unload()
+        self.__current_track = None
 
+    @__forbid_empty_playlist
     def pause(self):
-        pass
+        mixer.music.pause()
+        self.__is_paused = True
 
+    @__forbid_empty_playlist
     def prev(self):
         pass
 
@@ -54,4 +81,10 @@ class AudioPlayer:
 
     @__update_order
     def remove(self, index: int):
-        del self.playlist[index]
+        track_to_delete = self.playlist[index]
+        is_need_to_stop = track_to_delete == self.__current_track
+        del track_to_delete
+        if is_need_to_stop:
+            self.stop()
+            return True
+        return False

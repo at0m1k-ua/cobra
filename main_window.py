@@ -30,8 +30,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def __remove(self):
         for index in self.__ui.list_tracks.selectedIndexes():
             row: int = index.row()
-            self.__audio_player.remove(row)
             self.__ui.list_tracks.takeItem(row)
+            if self.__audio_player.remove(row):
+                self.__set_stop_state()
 
     def __straight(self):
         self.__set_order(StraightOrder)
@@ -55,16 +56,22 @@ class MainWindow(QtWidgets.QMainWindow):
             button.setEnabled(order_type != order_types[button])
 
     def __play(self):
-        self.__ui.play_button.setEnabled(False)
-        self.__ui.pause_button.setEnabled(True)
-        self.__ui.stop_button.setEnabled(True)
+        if self.__audio_player.play():
+            self.__ui.play_button.setEnabled(False)
+            self.__ui.pause_button.setEnabled(True)
+            self.__ui.stop_button.setEnabled(True)
 
     def __pause(self):
-        self.__ui.play_button.setEnabled(True)
-        self.__ui.pause_button.setEnabled(False)
-        self.__ui.stop_button.setEnabled(True)
+        if self.__audio_player.pause():
+            self.__ui.play_button.setEnabled(True)
+            self.__ui.pause_button.setEnabled(False)
+            self.__ui.stop_button.setEnabled(True)
 
     def __stop(self):
+        if self.__audio_player.stop():
+            self.__set_stop_state()
+
+    def __set_stop_state(self):
         self.__ui.play_button.setEnabled(True)
         self.__ui.pause_button.setEnabled(False)
         self.__ui.stop_button.setEnabled(False)
