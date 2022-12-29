@@ -1,5 +1,3 @@
-from PyQt6 import QtWidgets
-
 from qt_main_window_ui import Ui_mainWindow
 
 
