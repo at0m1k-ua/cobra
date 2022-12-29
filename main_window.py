@@ -57,9 +57,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def __play(self):
         if self.__audio_player.play():
-            self.__ui.play_button.setEnabled(False)
-            self.__ui.pause_button.setEnabled(True)
-            self.__ui.stop_button.setEnabled(True)
+            self.__set_play_state()
 
     def __pause(self):
         if self.__audio_player.pause():
@@ -71,16 +69,25 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.__audio_player.stop():
             self.__set_stop_state()
 
+    def __set_play_state(self):
+        self.__ui.play_button.setEnabled(False)
+        self.__ui.pause_button.setEnabled(True)
+        self.__ui.stop_button.setEnabled(True)
+
     def __set_stop_state(self):
         self.__ui.play_button.setEnabled(True)
         self.__ui.pause_button.setEnabled(False)
         self.__ui.stop_button.setEnabled(False)
 
-    def __timeline_pressed(self):
-        pass
+    def __prev(self):
+        if self.__audio_player.prev():
+            self.__set_play_state()
+            self.__ui.list_tracks.setCurrentRow(self.__audio_player.current_id)
 
-    def __timeline_released(self):
-        pass
+    def __next(self):
+        if self.__audio_player.next():
+            self.__set_play_state()
+            self.__ui.list_tracks.setCurrentRow(self.__audio_player.current_id)
 
     def __set_up_events(self):
         events = {
@@ -91,7 +98,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self.__ui.random_button.pressed: lambda: self.__set_order(RandomOrder),
             self.__ui.play_button.pressed: self.__play,
             self.__ui.pause_button.pressed: self.__pause,
-            self.__ui.stop_button.pressed: self.__stop
+            self.__ui.stop_button.pressed: self.__stop,
+            self.__ui.prev_button.pressed: self.__prev,
+            self.__ui.next_button.pressed: self.__next
         }
 
         for event in events:

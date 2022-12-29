@@ -62,10 +62,13 @@ class AudioPlayer:
 
     @__forbid_empty_playlist
     def prev(self):
-        pass
+        self.__order.move_backward()
+        return self.play()
 
+    @__forbid_empty_playlist
     def next(self):
-        pass
+        self.__order.move_forward()
+        return self.play()
 
     def set_order_type(self, new_order_type: type):
         self.__order = new_order_type(
@@ -88,3 +91,7 @@ class AudioPlayer:
 
         del self.playlist[index]
         return set_stop_state
+
+    @property
+    def current_id(self):
+        return self.__order.current_id()
