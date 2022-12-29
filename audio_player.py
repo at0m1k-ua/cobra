@@ -81,10 +81,10 @@ class AudioPlayer:
 
     @__update_order
     def remove(self, index: int):
-        track_to_delete = self.playlist[index]
-        is_need_to_stop = track_to_delete == self.__current_track
-        del track_to_delete
-        if is_need_to_stop:
+        set_stop_state = False
+        if self.playlist[index] == self.__current_track:
             self.stop()
-            return True
-        return False
+            set_stop_state = True
+
+        del self.playlist[index]
+        return set_stop_state
