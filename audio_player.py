@@ -10,7 +10,8 @@ class AudioPlayer:
     def __init__(self):
         mixer.init()
         self.playlist: list = list()
-        self.__timeline_follower = TimelineFollower(None)
+        self.__timeline_follower = TimelineFollower()
+        self.__timeline_follower.daemon = True
         self.__order = StraightOrder(0, 0)
         self.__current_track = None
         self.__is_paused = False
@@ -56,6 +57,8 @@ class AudioPlayer:
         else:
             mixer.music.unpause()
             self.__is_paused = False
+        self.timeline_follower.set_song(self.__current_track)
+        self.timeline_follower.start()
 
     @__forbid_empty_playlist
     def stop(self):

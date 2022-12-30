@@ -102,6 +102,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.__ui.stop_button.pressed: self.__stop,
             self.__ui.prev_button.pressed: self.__prev,
             self.__ui.next_button.pressed: self.__next
+
         }
 
         for event in events:
