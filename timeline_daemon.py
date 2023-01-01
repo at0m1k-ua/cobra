@@ -11,7 +11,7 @@ class TimelineDaemon(Thread):
     def __init__(self,
                  audio_player: AudioPlayer,
                  timeline: QtWidgets.QSlider,
-                 next_track):
+                 start_next_track):
         super().__init__()
         self.__audio_player = audio_player
         self.__timeline = timeline
@@ -19,14 +19,14 @@ class TimelineDaemon(Thread):
         self.count = False
         self.lock_slider = True
         self.daemon = True
-        self.__next_track = next_track
+        self.__start_next_track = start_next_track
 
     def run(self):
         while True:
             delay(1000)
             if self.count:
                 if self.__pos_seconds >= self.__audio_player.track_length:
-                    self.__next_track()
+                    self.__start_next_track()
 
                 self.__pos_seconds += 1
 
