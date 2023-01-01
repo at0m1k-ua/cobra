@@ -5,6 +5,7 @@ from PyQt6 import QtWidgets
 from audio_player import AudioPlayer
 from main_window_ui import MainWindowUI
 from order import RandomOrder, StraightOrder, ReverseOrder
+from timeline_daemon import TimelineDaemon
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -15,6 +16,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.__audio_player = AudioPlayer()
         self.__set_order(StraightOrder)
         self.__set_up_events()
+        self.__timeline_daemon = TimelineDaemon(
+            self.__audio_player,
+            self.__ui.timeline,
+            self.__next
+        )
+        self.__timeline_daemon.start()
+        self.__is_paused = False
 
     def __add(self):
         file_dialog = QtWidgets.QFileDialog()
@@ -56,17 +64,29 @@ class MainWindow(QtWidgets.QMainWindow):
             button.setEnabled(order_type != order_types[button])
 
     def __play(self):
-        if self.__audio_player.play():
-            self.__set_play_state()
+        if not self.__is_paused:
+            if self.__audio_player.play():
+                self.__timeline_daemon.reset()
+                self.__timeline_daemon.count = True
+                self.__set_play_state()
+        else:
+            if self.__audio_player.unpause():
+                self.__is_paused = False
+                self.__set_play_state()
 
     def __pause(self):
         if self.__audio_player.pause():
+            self.__is_paused = True
+            self.__timeline_daemon.count = False
             self.__ui.play_button.setEnabled(True)
             self.__ui.pause_button.setEnabled(False)
             self.__ui.stop_button.setEnabled(True)
 
     def __stop(self):
         if self.__audio_player.stop():
+            self.__is_paused = False
+            self.__timeline_daemon.count = False
+            self.__timeline_daemon.reset()
             self.__set_stop_state()
 
     def __set_play_state(self):
@@ -81,13 +101,22 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def __prev(self):
         if self.__audio_player.prev():
+            self.__timeline_daemon.reset()
             self.__set_play_state()
             self.__ui.list_tracks.setCurrentRow(self.__audio_player.current_id)
 
     def __next(self):
         if self.__audio_player.next():
+            self.__timeline_daemon.reset()
             self.__set_play_state()
             self.__ui.list_tracks.setCurrentRow(self.__audio_player.current_id)
+
+    def __timeline_pressed(self):
+        self.__timeline_daemon.lock_slider = False
+
+    def __timeline_released(self):
+        self.__timeline_daemon.lock_slider = True
+        self.__timeline_daemon.rewind(self.__ui.timeline.value())
 
     def __set_up_events(self):
         events = {
@@ -100,7 +129,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self.__ui.pause_button.pressed: self.__pause,
             self.__ui.stop_button.pressed: self.__stop,
             self.__ui.prev_button.pressed: self.__prev,
-            self.__ui.next_button.pressed: self.__next
+            self.__ui.next_button.pressed: self.__next,
+            self.__ui.timeline.sliderPressed: self.__timeline_pressed,
+            self.__ui.timeline.sliderReleased: self.__timeline_released
         }
 
         for event in events:

@@ -12,7 +12,7 @@ class AudioPlayer:
         self.playlist: list = list()
         self.__order = StraightOrder(0, 0)
         self.__current_track = None
-        self.__is_paused = False
+        self.__current_track_length = 0
 
     @staticmethod
     def __update_order(method_to_decorate):
@@ -34,31 +34,31 @@ class AudioPlayer:
             if not len(self.playlist):
                 return False  # don't change UI
             result = method_to_decorate(self, *args, **kwargs)
-            return result or True
+            return True
 
         return wrapper
 
     @__forbid_empty_playlist
     def play(self):
-        if not self.__is_paused:
-            self.__current_track = self.playlist[self.__order.current_id()]
-            mixer.music.load(self.__current_track)
-            mixer.music.play()
-        else:
-            mixer.music.unpause()
-            self.__is_paused = False
+        self.__current_track = self.playlist[self.__order.current_id()]
+        self.__current_track_length = int(mixer.Sound(self.__current_track).get_length())
+        mixer.music.load(self.__current_track)
+        mixer.music.play()
+
+    @__forbid_empty_playlist
+    def unpause(self):
+        mixer.music.unpause()
 
     @__forbid_empty_playlist
     def stop(self):
-        self.__is_paused = False
         mixer.music.stop()
         mixer.music.unload()
         self.__current_track = None
+        self.__current_track_length = 0
 
     @__forbid_empty_playlist
     def pause(self):
         mixer.music.pause()
-        self.__is_paused = True
 
     @__forbid_empty_playlist
     def prev(self):
@@ -95,3 +95,15 @@ class AudioPlayer:
     @property
     def current_id(self):
         return self.__order.current_id()
+
+    @property
+    def track_is_loaded(self):
+        return self.__current_track is not None
+
+    @property
+    def track_length(self):
+        return self.__current_track_length
+
+    @staticmethod
+    def position(position: int):
+        mixer.music.set_pos(position)
