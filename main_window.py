@@ -14,6 +14,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.__ui = MainWindowUI()
         self.__ui.setupUi(self)
         self.__audio_player = AudioPlayer()
+        self.__audio_player.timeline_follower.timeline = self.__ui.timeline
         self.__set_order(StraightOrder)
         self.__set_up_events()
         self.__timeline_daemon = TimelineDaemon(
