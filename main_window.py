@@ -72,6 +72,7 @@ class MainWindow(QtWidgets.QMainWindow):
         for button in order_types:
             button.setEnabled(order_type != order_types[button])
 
+    @__ignore_empty_playlist
     def __play(self):
         if self.__is_paused:
             self.__audio_player.unpause()
@@ -82,12 +83,14 @@ class MainWindow(QtWidgets.QMainWindow):
             self.__timeline_daemon.is_incrementing = True
         self.__set_play_state()
 
+    @__ignore_empty_playlist
     def __pause(self):
         self.__audio_player.pause()
         self.__is_paused = True
         self.__timeline_daemon.is_incrementing = False
         self.__set_pause_state()
 
+    @__ignore_empty_playlist
     def __stop(self):
         self.__audio_player.stop()
         self.__is_paused = False
@@ -110,17 +113,19 @@ class MainWindow(QtWidgets.QMainWindow):
         self.__ui.pause_button.setEnabled(False)
         self.__ui.stop_button.setEnabled(True)
 
+    @__ignore_empty_playlist
     def __prev(self):
-        if self.__audio_player.prev():
-            self.__timeline_daemon.reset()
-            self.__set_play_state()
-            self.__ui.list_tracks.setCurrentRow(self.__audio_player.current_id)
+        self.__audio_player.prev()
+        self.__timeline_daemon.reset()
+        self.__ui.list_tracks.setCurrentRow(self.__audio_player.current_id)
+        self.__set_play_state()
 
+    @__ignore_empty_playlist
     def __next(self):
-        if self.__audio_player.next():
-            self.__timeline_daemon.reset()
-            self.__set_play_state()
-            self.__ui.list_tracks.setCurrentRow(self.__audio_player.current_id)
+        self.__audio_player.next()
+        self.__timeline_daemon.reset()
+        self.__set_play_state()
+        self.__ui.list_tracks.setCurrentRow(self.__audio_player.current_id)
 
     def __timeline_pressed(self):
         self.__timeline_daemon.lock_slider = False

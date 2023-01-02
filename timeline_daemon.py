@@ -29,6 +29,12 @@ class TimelineDaemon(Thread):
 
             self.update()
 
+    def __increment_pos(self):
+        self.__pos_seconds += 1
+
+        if self.__pos_seconds >= self.__audio_player.track_length:
+            self.__start_next_track()
+
     def update(self):
         if not self.lock_slider:
             return
