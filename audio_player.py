@@ -13,14 +13,6 @@ class AudioPlayer:
         self.__current_track = None
         self.__current_track_length = 0
 
-    @property
-    def timeline_follower(self):
-        return self.__timeline_follower
-
-    @timeline_follower.setter
-    def timeline_follower(self, value):
-        self.__timeline_follower = value
-
     @staticmethod
     def __update_order(method_to_decorate):
         def wrapper(self, *args, **kwargs):
