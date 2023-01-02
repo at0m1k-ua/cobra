@@ -2,7 +2,6 @@ from pathlib import Path
 from pygame import mixer
 
 from order import StraightOrder
-from timeline_follower import TimelineFollower
 
 
 class AudioPlayer:
@@ -10,7 +9,6 @@ class AudioPlayer:
     def __init__(self):
         mixer.init()
         self.playlist: list = list()
-        self.__timeline_follower = TimelineFollower(None)
         self.__order = StraightOrder(0, 0)
         self.__current_track = None
         self.__current_track_length = 0
@@ -41,9 +39,9 @@ class AudioPlayer:
     def __forbid_empty_playlist(method_to_decorate):
         def wrapper(self, *args, **kwargs):
             if not len(self.playlist):
-                return False  # don't change UI
-            result = method_to_decorate(self, *args, **kwargs)
-            return True
+                raise IndexError("Playlist is empty")
+
+            return method_to_decorate(self, *args, **kwargs)
 
         return wrapper
 

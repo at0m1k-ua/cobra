@@ -24,6 +24,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.__timeline_daemon.start()
         self.__is_paused = False
 
+    @staticmethod
+    def __ignore_empty_playlist(func):
+        def wrapper(*args, **kwargs):
+            try:
+                func(*args, **kwargs)
+            except IndexError("Playlist is empty"):
+                pass
+        return wrapper
+
     def __add(self):
         file_dialog = QtWidgets.QFileDialog()
         paths_str = file_dialog.getOpenFileNames(self,
@@ -64,30 +73,27 @@ class MainWindow(QtWidgets.QMainWindow):
             button.setEnabled(order_type != order_types[button])
 
     def __play(self):
-        if not self.__is_paused:
-            if self.__audio_player.play():
-                self.__timeline_daemon.reset()
-                self.__timeline_daemon.count = True
-                self.__set_play_state()
+        if self.__is_paused:
+            self.__audio_player.unpause()
+            self.__is_paused = False
         else:
-            if self.__audio_player.unpause():
-                self.__is_paused = False
-                self.__set_play_state()
+            self.__audio_player.play()
+            self.__timeline_daemon.reset()
+            self.__timeline_daemon.is_incrementing = True
+        self.__set_play_state()
 
     def __pause(self):
-        if self.__audio_player.pause():
-            self.__is_paused = True
-            self.__timeline_daemon.count = False
-            self.__ui.play_button.setEnabled(True)
-            self.__ui.pause_button.setEnabled(False)
-            self.__ui.stop_button.setEnabled(True)
+        self.__audio_player.pause()
+        self.__is_paused = True
+        self.__timeline_daemon.is_incrementing = False
+        self.__set_pause_state()
 
     def __stop(self):
-        if self.__audio_player.stop():
-            self.__is_paused = False
-            self.__timeline_daemon.count = False
-            self.__timeline_daemon.reset()
-            self.__set_stop_state()
+        self.__audio_player.stop()
+        self.__is_paused = False
+        self.__timeline_daemon.is_incrementing = False
+        self.__timeline_daemon.reset()
+        self.__set_stop_state()
 
     def __set_play_state(self):
         self.__ui.play_button.setEnabled(False)
@@ -98,6 +104,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.__ui.play_button.setEnabled(True)
         self.__ui.pause_button.setEnabled(False)
         self.__ui.stop_button.setEnabled(False)
+
+    def __set_pause_state(self):
+        self.__ui.play_button.setEnabled(True)
+        self.__ui.pause_button.setEnabled(False)
+        self.__ui.stop_button.setEnabled(True)
 
     def __prev(self):
         if self.__audio_player.prev():

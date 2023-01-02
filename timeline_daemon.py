@@ -16,7 +16,7 @@ class TimelineDaemon(Thread):
         self.__audio_player = audio_player
         self.__timeline = timeline
         self.__pos_seconds = 0
-        self.count = False
+        self.is_incrementing = False
         self.lock_slider = True
         self.daemon = True
         self.__start_next_track = start_next_track
@@ -24,11 +24,8 @@ class TimelineDaemon(Thread):
     def run(self):
         while True:
             delay(1000)
-            if self.count:
-                if self.__pos_seconds >= self.__audio_player.track_length:
-                    self.__start_next_track()
-
-                self.__pos_seconds += 1
+            if self.is_incrementing:
+                self.__increment_pos()
 
             self.update()
 
